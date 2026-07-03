@@ -24,3 +24,20 @@ dist-ssr
 *.sw?
 
 .vercel
+# =========================
+# Android
+# =========================
+local.properties
+.gradle/
+build/
+app/build/
+
+# Android signing keys
+*.keystore
+*.jks
+
+# Android Studio
+*.iml
+
+# Generated files
+captures/
