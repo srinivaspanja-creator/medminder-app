@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+   "package_name": "app.vercel.MyMedMinder_srinivas_panjas_projects",
+    "sha256_cert_fingerprints":
+    ["FF:D8:A5:57:60:26:1F:F5:44:06:B6:3B:07:D1:AB:4A:97:57:0E:EE:72:2B:8A:EA:10:4A:42:0F:F5:41:C1:8E"]
+  }
+}]
