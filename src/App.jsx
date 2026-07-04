@@ -73,10 +73,10 @@ function App() {
   0
 );
   // Prescription Vault states
-  const [vaultPhotos, setVaultPhotos] = useState(() => {
-    const saved = localStorage.getItem('MyMedMinder_vault');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [vaultPhotos, setVaultPhotos] = useLocalStorage(
+  "MyMedMinder_vaultPhotos",
+  []
+);
  const [vaultPin, setVaultPin] = useState(() => {
     return localStorage.getItem('MyMedMinder_vaultPin') || null;
   });
@@ -111,14 +111,7 @@ const [editStockValue, setEditStockValue] = useState('');
   const [securityAnswerInput, setSecurityAnswerInput] = useState('');
 // Automatically save data points to localStorage
   
-  useEffect(() => {
-    localStorage.setItem('MyMedMinder_history', JSON.stringify(history));
-  }, [history]);
- 
   
- useEffect(() => {
-    localStorage.setItem('MyMedMinder_vault', JSON.stringify(vaultPhotos));
-  }, [vaultPhotos]);
   useEffect(() => {
     localStorage.setItem('MyMedMinder_appointments', JSON.stringify(appointments));
   }, [appointments]);
