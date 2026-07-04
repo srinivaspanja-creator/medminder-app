@@ -334,12 +334,7 @@ const toggleTaken = (id) => {
   takenAt: null,
 };
     setMedications((prev) => [...prev, newMed]);
-    setName("");
-setDosage("");
-setDosageType("Tablet");
-setPeriod("Morning");
-setInstructions("");
-setInventory("");
+    
   };
 
   // Delete medication
@@ -519,43 +514,7 @@ setMedications((prev) =>
     setEditDateValue('');
   };
 
-  // Calculate days until an appointment (negative = overdue)
-const getDaysUntil = (dateString) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const [year, month, day] = dateString.split('-').map(Number);
-    const appointmentDay = new Date(year, month - 1, day);
-    appointmentDay.setHours(0, 0, 0, 0);
-    const diffTime = appointmentDay - today;
-    return Math.round(diffTime / (1000 * 60 * 60 * 24));
-  };
 
- 
-const hasInventory = (med) =>
-  med.inventory !== null &&
-  med.inventory !== undefined &&
-  med.inventory !== "";
-
-const isLowStock = (med) =>
-  hasInventory(med) &&
-  Number(med.inventory) > 0 &&
-  Number(med.inventory) <= 5;
-
-const isOutOfStock = (med) =>
-  hasInventory(med) &&
-  Number(med.inventory) === 0;
-
-// Format a date string (YYYY-MM-DD) safely without timezone shift
-const formatAppointmentDate = (dateString) => {
-  const [year, month, day] = dateString.split('-').map(Number);
-  const localDate = new Date(year, month - 1, day);
-  return localDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-};
   // Export medication list as a CSV file
   const handleExportCSV = () => {
     const headers = ['Name', 'Dosage', 'Time Period', 'Instructions', 'Stock Remaining', 'Taken Today'];
@@ -590,13 +549,7 @@ const checkIfMissed = (med) => {
     return false;
   };
 
-  // Helper to draw clean header icon graphics dynamically
-  const getPeriodIcon = (period) => {
-    if (period === 'Morning') return <i className="fa-solid fa-cloud-sun icon-morning"></i>;
-    if (period === 'Afternoon') return <i className="fa-solid fa-sun icon-afternoon"></i>;
-    return <i className="fa-solid fa-moon icon-evening"></i>;
-  };
-
+ 
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
     const filteredMeds = medications.filter(med => med.period === timePeriod);
