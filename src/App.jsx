@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import useLocalStorage from "./hooks/useLocalStorage";
+import useClock from "./hooks/useClock";
+import useClock from "./hooks/useClock";
 import {
   hasInventory,
   isLowStock,
@@ -52,9 +54,7 @@ function App() {
   const [instructions, setInstructions] = useState('');
   const [inventory, setInventory] = useState('');
   
-  // Clock contexts
-  const [currentHour, setCurrentHour] = useState(new Date().getHours());
-  const [greeting, setGreeting] = useState('Hello');
+  const { currentHour, greeting } = useClock();
 
 // Streak & History states
   const [history, setHistory] = useState(() => {
@@ -113,24 +113,7 @@ const [editStockValue, setEditStockValue] = useState('');
   
   
   
-  // Update clock contexts
-  useEffect(() => {
-    const updateTimeContext = () => {
-      const hour = new Date().getHours();
-      setCurrentHour(hour);
-      
-      if (hour < 12) {
-        setGreeting('Good Morning');
-      } else if (hour < 17) {
-        setGreeting('Good Afternoon');
-      } else {
-        setGreeting('Good Evening');
-      }
-    };
-updateTimeContext();
-    const interval = setInterval(updateTimeContext, 60000);
-    return () => clearInterval(interval);
-  }, []);
+ 
 
   // Detect missed doses and trigger alert + sound
   useEffect(() => {
