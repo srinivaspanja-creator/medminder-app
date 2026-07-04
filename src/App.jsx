@@ -81,10 +81,10 @@ function App() {
     return localStorage.getItem('MyMedMinder_vaultPin') || null;
   });
   // Doctor Appointment states
-  const [appointments, setAppointments] = useState(() => {
-    const saved = localStorage.getItem('MyMedMinder_appointments');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [appointments, setAppointments] = useLocalStorage(
+  "MyMedMinder_appointments",
+  []
+);
   const [doctorName, setDoctorName] = useState('');
   const [appointmentPurpose, setAppointmentPurpose] = useState('');
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -112,9 +112,7 @@ const [editStockValue, setEditStockValue] = useState('');
 // Automatically save data points to localStorage
   
   
-  useEffect(() => {
-    localStorage.setItem('MyMedMinder_appointments', JSON.stringify(appointments));
-  }, [appointments]);
+  
   // Update clock contexts
   useEffect(() => {
     const updateTimeContext = () => {
