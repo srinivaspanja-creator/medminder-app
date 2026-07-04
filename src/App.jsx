@@ -1,16 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-
+import useLocalStorage from "./hooks/useLocalStorage";
 function App() {
   // Initialize state from LocalStorage
-  const [medications, setMedications] = useState(() => {
-    const savedMeds = localStorage.getItem('MyMedMinder_list');
-    return savedMeds ? JSON.parse(savedMeds) : [
-      { id: 1, name: 'Amoxicillin', dosage: '500mg', period: 'Morning', instructions: 'Take with breakfast', taken: false, inventory: null },
-      { id: 2, name: 'Vitamin D3', dosage: '2000 IU', period: 'Afternoon', instructions: 'Take after lunch', taken: false, inventory: null },
-      { id: 3, name: 'Metformin', dosage: '850mg', period: 'Evening', instructions: 'Take with dinner', taken: false, inventory: null }
-    ];
-  });
+  const [medications, setMedications] = useLocalStorage(
+  "MyMedMinder_list",
+  [
+    {
+      id: 1,
+      name: "Amoxicillin",
+      dosage: "500mg",
+      period: "Morning",
+      instructions: "Take with breakfast",
+      taken: false,
+      inventory: null,
+    },
+    {
+      id: 2,
+      name: "Vitamin D3",
+      dosage: "2000 IU",
+      period: "Afternoon",
+      instructions: "Take after lunch",
+      taken: false,
+      inventory: null,
+    },
+    {
+      id: 3,
+      name: "Metformin",
+      dosage: "850mg",
+      period: "Evening",
+      instructions: "Take with dinner",
+      taken: false,
+      inventory: null,
+    },
+  ]
+);
 
   // Form states
   const [name, setName] = useState('');
@@ -78,9 +102,7 @@ const [editingStockId, setEditingStockId] = useState(null);
 const [editStockValue, setEditStockValue] = useState('');
   const [securityAnswerInput, setSecurityAnswerInput] = useState('');
 // Automatically save data points to localStorage
-  useEffect(() => {
-    localStorage.setItem('MyMedMinder_list', JSON.stringify(medications));
-  }, [medications]);
+  
   useEffect(() => {
     localStorage.setItem('MyMedMinder_history', JSON.stringify(history));
   }, [history]);
@@ -548,7 +570,17 @@ const checkIfMissed = (med) => {
     if (med.period === 'Afternoon' && currentHour >= 17) return true;
     return false;
   };
+const getPeriodIcon = (period) => {
+  if (period === "Morning") {
+    return <i className="fa-solid fa-cloud-sun icon-morning"></i>;
+  }
 
+  if (period === "Afternoon") {
+    return <i className="fa-solid fa-sun icon-afternoon"></i>;
+  }
+
+  return <i className="fa-solid fa-moon icon-evening"></i>;
+};
  
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
