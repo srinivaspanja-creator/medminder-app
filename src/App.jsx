@@ -3,6 +3,7 @@ import './App.css';
 import useLocalStorage from "./hooks/useLocalStorage";
 import useClock from "./hooks/useClock";
 import MedicationCard from "./components/MedicationCard";
+import MedicationGroup from "./components/MedicationGroup";
 import {
   hasInventory,
   isLowStock,
@@ -562,42 +563,27 @@ const getPeriodIcon = (period) => {
  
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
-    const filteredMeds = medications.filter(med => med.period === timePeriod);
-    return (
-      <div className="time-period-group">
-        <h3 className="period-heading">
-          {getPeriodIcon(timePeriod)} {sectionTitle}
-        </h3>
-        {filteredMeds.length === 0 ? (
-          <p className="empty-period-text">No medications scheduled for this time.</p>
-        ) : (
-          <>
-          <p className="sub-instruction">Tap the button when you finish taking your dose.</p>
-          <div className="med-grid">
-            {filteredMeds.map((med) => {
-              const isMissed = checkIfMissed(med);
-              
-              return (
-  <MedicationCard
-    key={med.id}
-    med={med}
-    isMissed={isMissed}
-    editingStockId={editingStockId}
-    editStockValue={editStockValue}
-    setEditStockValue={setEditStockValue}
-    setEditingStockId={setEditingStockId}
-    handleUpdateStock={handleUpdateStock}
-    toggleTaken={toggleTaken}
-    deleteMedication={deleteMedication}
-  />
-);
-           })}
-          </div>
-          </>
-        )}
-      </div>
-    );
-  };
+  const filteredMeds = medications.filter(
+    (med) => med.period === timePeriod
+  );
+
+  return (
+    <MedicationGroup
+      sectionTitle={sectionTitle}
+      timePeriod={timePeriod}
+      filteredMeds={filteredMeds}
+      getPeriodIcon={getPeriodIcon}
+      checkIfMissed={checkIfMissed}
+      editingStockId={editingStockId}
+      editStockValue={editStockValue}
+      setEditStockValue={setEditStockValue}
+      setEditingStockId={setEditingStockId}
+      handleUpdateStock={handleUpdateStock}
+      toggleTaken={toggleTaken}
+      deleteMedication={deleteMedication}
+    />
+  );
+};
 const bannerMessages = React.useMemo(() => {
   const msgs = [];
 
