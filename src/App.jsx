@@ -5,6 +5,7 @@ import useClock from "./hooks/useClock";
 import MedicationCard from "./components/MedicationCard";
 import MedicationGroup from "./components/MedicationGroup";
 import AppointmentCard from "./components/AppointmentCard";
+import BannerStrip from "./components/BannerStrip";
 import {
   hasInventory,
   isLowStock,
@@ -661,14 +662,10 @@ React.useEffect(() => {
       
       {/* 1. TOP BANNER */}
       <div className="welcome-banner">
-{bannerMessages.length > 0 && (
-  <div className="info-banner-strip">
-    <i className={`fa-solid ${bannerMessages[bannerIndex].icon} info-banner-icon`}></i>
-    <span key={bannerIndex} className="info-banner-text">
-      {bannerMessages[bannerIndex].text}
-    </span>
-  </div>
-)}
+<BannerStrip
+  bannerMessages={bannerMessages}
+  bannerIndex={bannerIndex}
+/>
       <h1>
   <img src="/logo.png" alt="MyMedMinder Logo" className="header-logo" />
   MyMedMinder
