@@ -38,10 +38,3 @@ export const formatAppointmentDate = (dateString) => {
     year: "numeric",
   });
 };
-
-  if (period === "Afternoon") {
-    return <i className="fa-solid fa-sun icon-afternoon"></i>;
-  }
-
-  return <i className="fa-solid fa-moon icon-evening"></i>;
-};

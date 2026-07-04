@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import useLocalStorage from "./hooks/useLocalStorage";
+import {
+  hasInventory,
+  isLowStock,
+  isOutOfStock,
+  getDaysUntil,
+  formatAppointmentDate,
+} from "./utils/medicationUtils";
+
 function App() {
   // Initialize state from LocalStorage
   const [medications, setMedications] = useLocalStorage(
@@ -53,10 +61,10 @@ function App() {
     const savedHistory = localStorage.getItem('MyMedMinder_history');
     return savedHistory ? JSON.parse(savedHistory) : [];
   });
-  const [missedHistory, setMissedHistory] = useState(() => {
-    const saved = localStorage.getItem('MyMedMinder_missedHistory');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [missedHistory, setMissedHistory] = useLocalStorage(
+  "MyMedMinder_missed",
+  []
+);
   const [streak, setStreak] = useState(() => {
     const savedStreak = localStorage.getItem('MyMedMinder_streak');
     return savedStreak ? Number(savedStreak) : 0;
@@ -106,9 +114,7 @@ const [editStockValue, setEditStockValue] = useState('');
   useEffect(() => {
     localStorage.setItem('MyMedMinder_history', JSON.stringify(history));
   }, [history]);
-useEffect(() => {
-  localStorage.setItem('MyMedMinder_missedHistory', JSON.stringify(missedHistory));
-}, [missedHistory]);
+ 
   useEffect(() => {
     localStorage.setItem('MyMedMinder_streak', JSON.stringify(streak));
   }, [streak]);
