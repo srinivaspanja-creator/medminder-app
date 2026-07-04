@@ -65,13 +65,13 @@ function App() {
   "MyMedMinder_missed",
   []
 );
-  const [streak, setStreak] = useState(() => {
-    const savedStreak = localStorage.getItem('MyMedMinder_streak');
-    return savedStreak ? Number(savedStreak) : 0;
-  });
+  
   const [lastRecordedDate, setLastRecordedDate] = useState(() => {
     return localStorage.getItem('MyMedMinder_lastRecordedDate') || '';
-  });
+  });const [streak, setStreak] = useLocalStorage(
+  "MyMedMinder_streak",
+  0
+);
   // Prescription Vault states
   const [vaultPhotos, setVaultPhotos] = useState(() => {
     const saved = localStorage.getItem('MyMedMinder_vault');
@@ -115,9 +115,7 @@ const [editStockValue, setEditStockValue] = useState('');
     localStorage.setItem('MyMedMinder_history', JSON.stringify(history));
   }, [history]);
  
-  useEffect(() => {
-    localStorage.setItem('MyMedMinder_streak', JSON.stringify(streak));
-  }, [streak]);
+  
  useEffect(() => {
     localStorage.setItem('MyMedMinder_vault', JSON.stringify(vaultPhotos));
   }, [vaultPhotos]);
