@@ -643,6 +643,10 @@ React.useEffect(() => {
   }, 4000);
   return () => clearInterval(timer);
 }, [bannerMessages]);
+// Dashboard summary values
+const totalMedications = medications.length;
+const takenToday = medications.filter(med => med.taken).length;
+const remainingToday = totalMedications - takenToday;
  return (
     <div className="app-container">
       {/* MISSED DOSE ALERT POPUP */}
@@ -665,7 +669,35 @@ React.useEffect(() => {
   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
 </p>
       </div>
+<section className="dashboard-summary" aria-label="Today's medication summary">
+  <div className="summary-card">
+    <i className="fa-solid fa-pills summary-icon"></i>
+    <div>
+      <span className="summary-value">{remainingToday}</span>
+      <span className="summary-label">
+        {remainingToday === 1 ? "Dose Remaining" : "Doses Remaining"}
+      </span>
+    </div>
+  </div>
 
+  <div className="summary-card">
+    <i className="fa-solid fa-circle-check summary-icon"></i>
+    <div>
+      <span className="summary-value">{takenToday}</span>
+      <span className="summary-label">Taken Today</span>
+    </div>
+  </div>
+
+  <div className="summary-card">
+    <span className="summary-icon" aria-hidden="true">🔥</span>
+    <div>
+      <span className="summary-value">{streak}</span>
+      <span className="summary-label">
+        {streak === 1 ? "Day Streak" : "Day Streak"}
+      </span>
+    </div>
+  </div>
+</section>
       <nav className="quick-nav-bar">
         <button onClick={() => document.getElementById('add-medication').scrollIntoView({ behavior: 'smooth' })}>
           <i className="fa-solid fa-circle-plus"></i>
