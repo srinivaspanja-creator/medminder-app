@@ -647,6 +647,10 @@ React.useEffect(() => {
 const totalMedications = medications.length;
 const takenToday = medications.filter(med => med.taken).length;
 const remainingToday = totalMedications - takenToday;
+console.log(completionPercentage);
+  totalMedications === 0
+    ? 0
+    : Math.round((takenToday / totalMedications) * 100);
  return (
     <div className="app-container">
       {/* MISSED DOSE ALERT POPUP */}
@@ -672,12 +676,31 @@ const remainingToday = totalMedications - takenToday;
 <section className="dashboard-summary" aria-label="Today's medication summary">
   <div className="summary-card">
     <i className="fa-solid fa-pills summary-icon"></i>
-    <div>
-      <span className="summary-value">{remainingToday}</span>
-      <span className="summary-label">
-        {remainingToday === 1 ? "Dose Remaining" : "Doses Remaining"}
-      </span>
-    </div>
+   <div className="summary-content">
+  <span className="summary-value">{remainingToday}</span>
+
+  <span className="summary-label">
+    {remainingToday === 1 ? "Dose Remaining" : "Doses Remaining"}
+  </span>
+
+  <div
+    className="summary-progress"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow={completionPercentage}
+    aria-label="Today's medication completion"
+  >
+    <div
+      className="summary-progress-fill"
+      style={{ width: `${completionPercentage}%` }}
+    />
+  </div>
+
+  <span className="summary-progress-text">
+    {completionPercentage}% completed
+  </span>
+</div>
   </div>
 
   <div className="summary-card">

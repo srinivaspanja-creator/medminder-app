@@ -1063,53 +1063,68 @@ h1, h2, h3, .nav-logo {
   background: #eef1ff;
   color: #5b6bf5;
 }
-/* ===============================
-   Sprint 5 - Dashboard Summary
-================================= */
-
-.dashboard-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 16px;
-  margin: 22px 0;
-}
-
 .summary-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
 
-  padding: 18px;
+  min-height: 110px;
 
-  background: #ffffff;
+  padding: 20px;
 
-  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
 
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border: 1px solid #e8eef7;
 
-  transition: transform 0.2s ease;
+  border-radius: 18px;
+
+  box-shadow: 0 8px 22px rgba(25, 50, 90, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
 .summary-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(25, 50, 90, 0.12);
+}
+/* Dashboard Summary Card Content */
+
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
 }
 
 .summary-icon {
-  font-size: 1.8rem;
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #eef5ff;
   color: #2b7de9;
-  min-width: 36px;
-  text-align: center;
+  font-size: 1.6rem;
 }
 
 .summary-value {
   display: block;
-  font-size: 1.7rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
+  color: #1f2937;
 }
 
 .summary-label {
   display: block;
+  margin-top: 6px;
   font-size: 0.95rem;
-  color: #666;
+  font-weight: 500;
+  color: #6b7280;
 }
