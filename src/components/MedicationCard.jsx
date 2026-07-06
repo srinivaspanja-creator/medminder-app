@@ -26,7 +26,35 @@ function MedicationCard({
           </span>
         )}
 
-        <h3>{med.name}</h3>
+<div className="med-card-header">
+  <h3>{med.name}</h3>
+
+  <span
+    className={`status-badge ${
+      isMissed
+        ? "status-missed"
+        : med.taken
+        ? "status-taken"
+        : "status-pending"
+    }`}
+  >
+    <i
+      className={`fa-solid ${
+        isMissed
+          ? "fa-triangle-exclamation"
+          : med.taken
+          ? "fa-circle-check"
+          : "fa-clock"
+      }`}
+    ></i>
+
+    {isMissed
+      ? "Missed"
+      : med.taken
+      ? "Taken"
+      : "Pending"}
+  </span>
+</div>
 
         <p className="med-dosage">
           <i className="fa-solid fa-prescription-bottle-medical icon-inline"></i>
