@@ -245,6 +245,34 @@ h1, h2, h3, .nav-logo {
   font-size: 1rem;
   padding: 0.5rem 0;
 }
+.empty-period-state {
+  margin: 1.5rem 0;
+  padding: 2rem 1.5rem;
+  border: 2px dashed #dbeafe;
+  border-radius: 16px;
+  background: #f8fbff;
+  text-align: center;
+}
+
+.empty-period-icon {
+  font-size: 2.75rem;
+  color: #3b82f6;
+  margin-bottom: 0.9rem;
+}
+
+.empty-period-state h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.empty-period-text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #64748b;
+}
 
 /* Medication Cards Layout styling */
 .med-grid {
@@ -301,6 +329,20 @@ h1, h2, h3, .nav-logo {
 
 .med-info > * + * {
   margin-top: 0.2rem;
+}
+.med-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.med-info-details {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.med-info-details > *:first-child {
+  margin-top: 0;
 }
 .med-card-header {
   display: flex;
@@ -359,7 +401,7 @@ h1, h2, h3, .nav-logo {
 
 .med-dosage,
 .med-instructions {
-  margin: 0.7rem 0;
+  margin: 0.65rem 0;
   font-size: 1.05rem;
   color: #334155;
   display: flex;

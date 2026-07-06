@@ -22,9 +22,18 @@ function MedicationGroup({
       </h3>
 
       {filteredMeds.length === 0 ? (
-        <p className="empty-period-text">
-          No medications scheduled for this time.
-        </p>
+        <div className="empty-period-state">
+  <i
+    className="fa-solid fa-pills empty-period-icon"
+    aria-hidden="true"
+  ></i>
+
+  <h4>No medications scheduled</h4>
+
+  <p className="empty-period-text">
+    Enjoy your free time! There are no medications planned for this period.
+  </p>
+</div>
       ) : (
         <>
           <p className="sub-instruction">
