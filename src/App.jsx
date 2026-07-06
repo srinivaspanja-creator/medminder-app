@@ -647,10 +647,13 @@ React.useEffect(() => {
 const totalMedications = medications.length;
 const takenToday = medications.filter(med => med.taken).length;
 const remainingToday = totalMedications - takenToday;
-console.log(completionPercentage);
+
+const completionPercentage =
   totalMedications === 0
     ? 0
     : Math.round((takenToday / totalMedications) * 100);
+
+console.log(completionPercentage);
  return (
     <div className="app-container">
       {/* MISSED DOSE ALERT POPUP */}

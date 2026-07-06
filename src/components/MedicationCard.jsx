@@ -84,19 +84,22 @@ function MedicationCard({
           onClick={() => toggleTaken(med.id)}
         >
           {med.taken ? (
-            <>
-              <i className="fa-solid fa-circle-check"></i> Taken
-              {med.takenAt && (
-                <span className="taken-time">
-                  {" "}
-                  at{" "}
-                  {new Date(med.takenAt).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </span>
-              )}
-            </>
+          <>
+  <span className="taken-label">
+    <i className="fa-solid fa-circle-check"></i>
+    Taken
+  </span>
+
+  {med.takenAt && (
+    <span className="taken-time">
+      Today •{" "}
+      {new Date(med.takenAt).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })}
+    </span>
+  )}
+</>
           ) : (
             "Mark as Taken"
           )}
