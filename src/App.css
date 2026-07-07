@@ -111,19 +111,21 @@ h1, h2, h3, .nav-logo {
   outline: 3px solid rgba(232, 72, 85, 0.35);
   outline-offset: 3px;
 }
-.form-section h2, .schedule-header-block h2 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+.form-section h2,
+.schedule-header-block h2 {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #1e293b;
-}
-.header-form-icon {
-  color: #1e293b;
-}
+  gap: 0.75rem;
 
+  margin: 0 0 1.5rem;
+
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.2;
+
+  color: #1e293b;
+  letter-spacing: -0.02em;
+}
 .med-form {
   display: flex;
   flex-direction: column;

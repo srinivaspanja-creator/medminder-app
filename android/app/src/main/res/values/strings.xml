@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MyMedMinder</string>
+    <string name="title_activity_main">MyMedMinder</string>
+    <string name="package_name">com.srinivaspanja.mymedminder</string>
+    <string name="custom_url_scheme">com.srinivaspanja.mymedminder</string>
+</resources>
