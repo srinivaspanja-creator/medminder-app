@@ -1,3 +1,4 @@
+import { LocalNotifications } from '@capacitor/local-notifications';
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import useLocalStorage from "./hooks/useLocalStorage";
@@ -19,6 +20,23 @@ import {
 } from "./utils/medicationUtils";
 
 function App() {
+const { currentHour, greeting } = useClock();
+const { startVoiceInput } = useVoiceRecognition();
+const requestNotificationPermission = async () => {
+  try {
+    const { display } = await LocalNotifications.checkPermissions();
+
+    if (display !== "granted") {
+      await LocalNotifications.requestPermissions();
+    }
+  } catch (error) {
+    console.error("Failed to request notification permission:", error);
+  }
+};
+useEffect(() => {
+  requestNotificationPermission();
+}, []);
+
   // Initialize state from LocalStorage
   const [medications, setMedications] = useLocalStorage(
   "MyMedMinder_list",
@@ -61,8 +79,7 @@ function App() {
   const [instructions, setInstructions] = useState('');
   const [inventory, setInventory] = useState('');
   
-  const { currentHour, greeting } = useClock();
-const { startVoiceInput } = useVoiceRecognition();
+  
 
 // Streak & History states
   const [history, setHistory] = useState(() => {
