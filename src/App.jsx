@@ -336,6 +336,7 @@ const toggleTaken = (id) => {
   dosageType,
   period,
   instructions: instructions || "No special instructions",
+reminderTimes: [],
   inventory: inventory !== "" ? Number(inventory) : null,
   taken: false,
   takenAt: null,
