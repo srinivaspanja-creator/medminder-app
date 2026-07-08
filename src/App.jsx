@@ -653,6 +653,16 @@ const bannerMessages = React.useMemo(() => {
 
   return msgs;
 }, [medications, appointments, missedMedsList, missedHistory]);
+useEffect(() => {
+  if (bannerMessages.length === 0) {
+    setBannerIndex(0);
+    return;
+  }
+
+  if (bannerIndex >= bannerMessages.length) {
+    setBannerIndex(0);
+  }
+}, [bannerMessages, bannerIndex]);
 
 React.useEffect(() => {
   if (bannerMessages.length <= 1) return;
