@@ -1314,3 +1314,21 @@ h1, h2, h3, .nav-logo {
   font-weight: 500;
   color: #6b7280;
 }
+
+.med-reminder-times {
+  margin: 10px 0;
+}
+
+.med-reminder-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.med-reminder-list {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.med-reminder-list li {
+  margin-bottom: 4px;
+}

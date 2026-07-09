@@ -9,6 +9,7 @@ import MedicationGroup from "./components/MedicationGroup";
 import AppointmentCard from "./components/AppointmentCard";
 import BannerStrip from "./components/BannerStrip";
 import VaultSetup from "./components/VaultSetup";
+import ReminderTimeEditor from "./components/ReminderTimeEditor";
 
 
 import {
@@ -71,14 +72,14 @@ useEffect(() => {
   ]
 );
 
-  // Form states
-  const [name, setName] = useState('');
-  const [dosage, setDosage] = useState('');
-  const [dosageType, setDosageType] = useState('Tablet');
-  const [period, setPeriod] = useState('Morning'); 
-  const [instructions, setInstructions] = useState('');
-  const [inventory, setInventory] = useState('');
-  
+ // Form states
+const [name, setName] = useState('');
+const [dosage, setDosage] = useState('');
+const [dosageType, setDosageType] = useState('Tablet');
+const [period, setPeriod] = useState('Morning');
+const [instructions, setInstructions] = useState('');
+const [inventory, setInventory] = useState('');
+const [reminderTimes, setReminderTimes] = useState([]);
   
 
 // Streak & History states
@@ -322,28 +323,38 @@ const toggleTaken = (id) => {
   );
 };
   // Add medication
-  const handleAddMedication = (e) => {
-    e.preventDefault();
-    if (!name) {
-      alert("Please enter a Medication Name.");
-      return;
-    }
+const handleAddMedication = (e) => {
+  e.preventDefault();
 
-    const newMed = {
-  id: Date.now(),
-  name: name.trim(),
-  dosage: dosage || "As directed",
-  dosageType,
-  period,
-  instructions: instructions || "No special instructions",
-reminderTimes: [],
-  inventory: inventory !== "" ? Number(inventory) : null,
-  taken: false,
-  takenAt: null,
-};
-    setMedications((prev) => [...prev, newMed]);
-    
+  if (!name.trim()) {
+    alert("Please enter a Medication Name.");
+    return;
+  }
+
+  const newMed = {
+    id: Date.now(),
+    name: name.trim(),
+    dosage: dosage || "As directed",
+    dosageType,
+    period,
+    instructions: instructions || "No special instructions",
+    reminderTimes: [...reminderTimes],
+    inventory: inventory !== "" ? Number(inventory) : null,
+    taken: false,
+    takenAt: null,
   };
+console.log("Saving medication:", newMed);
+  setMedications((prev) => [...prev, newMed]);
+
+  // Reset form
+  setName("");
+  setDosage("");
+  setDosageType("Tablet");
+  setPeriod("Morning");
+  setInstructions("");
+  setInventory("");
+  setReminderTimes([]);
+};
 
   // Delete medication
   const deleteMedication = (id) => {
@@ -867,8 +878,16 @@ console.log(completionPercentage);
                 value={inventory}
                 onChange={(e) => setInventory(e.target.value)}
               />
-            </div>
 
+            </div>
+<div className="form-group">
+  <label>Reminder Times</label>
+
+  <ReminderTimeEditor
+    value={reminderTimes}
+    onChange={setReminderTimes}
+  />
+</div>
             <button type="submit" className="add-med-btn">Save Medication</button>
           </form>
         </section>

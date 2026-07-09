@@ -61,10 +61,25 @@ function MedicationCard({
           <strong>Dosage:</strong> {med.dosage}
         </p>
 
-        <p className="med-instructions">
-          <i className="fa-solid fa-file-medical icon-inline"></i>
-          {med.instructions}
-        </p>
+<p className="med-instructions">
+  <i className="fa-solid fa-file-medical icon-inline"></i>
+  {med.instructions}
+</p>
+
+{Array.isArray(med.reminderTimes) && med.reminderTimes.length > 0 && (
+  <div className="med-reminder-times">
+    <p className="med-reminder-title">
+      <i className="fa-regular fa-clock icon-inline"></i>
+      <strong> Reminder Times:</strong>
+    </p>
+
+    <ul className="med-reminder-list">
+      {med.reminderTimes.map((time) => (
+        <li key={time}>{time}</li>
+      ))}
+    </ul>
+  </div>
+)}
 
         <InventoryStatus
           med={med}
