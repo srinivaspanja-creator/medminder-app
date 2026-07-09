@@ -1,19 +1,21 @@
 import React from "react";
 
 function BannerStrip({ bannerMessages, bannerIndex }) {
-  if (bannerMessages.length === 0) return null;
+  if (!bannerMessages?.length) return null;
+
+  const currentBanner =
+    bannerMessages[bannerIndex] ?? bannerMessages[0];
 
   return (
     <div className="info-banner-strip">
       <i
-        className={`fa-solid ${bannerMessages[bannerIndex].icon} info-banner-icon`}
+        className={`fa-solid ${currentBanner.icon} info-banner-icon`}
       ></i>
 
       <span key={bannerIndex} className="info-banner-text">
-        {bannerMessages[bannerIndex].text}
+        {currentBanner.text}
       </span>
     </div>
   );
 }
-
 export default BannerStrip;
