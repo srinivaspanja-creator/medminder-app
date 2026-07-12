@@ -10,6 +10,7 @@ import AppointmentCard from "./components/AppointmentCard";
 import BannerStrip from "./components/BannerStrip";
 import VaultSetup from "./components/VaultSetup";
 import ReminderTimeEditor from "./components/ReminderTimeEditor";
+import EditMedicationForm from "./components/EditMedicationForm";
 import NotificationService from "./services/notificationService";
 
 import {
@@ -39,7 +40,7 @@ useEffect(() => {
 }, []);
 
 // Editing state
-  
+  const [editingMedicationId, setEditingMedicationId] = useState(null);
 
 
   // Initialize state from LocalStorage
@@ -84,7 +85,6 @@ const [period, setPeriod] = useState('Morning');
 const [instructions, setInstructions] = useState('');
 const [inventory, setInventory] = useState('');
 const [reminderTimes, setReminderTimes] = useState([]);
-const [editingMedicationId, setEditingMedicationId] = useState(null);
   
 
 // Streak & History states
@@ -140,6 +140,11 @@ const [showForgotPin, setShowForgotPin] = useState(false);
 const [editingStockId, setEditingStockId] = useState(null);
 const [editStockValue, setEditStockValue] = useState('');
   const [securityAnswerInput, setSecurityAnswerInput] = useState('');
+
+// Checklist search / filter / sort (RC5)
+const [medSearchQuery, setMedSearchQuery] = useState('');
+const [medStatusFilter, setMedStatusFilter] = useState('all'); // all | pending | taken | missed
+const [medSortBy, setMedSortBy] = useState('time'); // time | name
 // Automatically save data points to localStorage
   
   
@@ -365,23 +370,6 @@ try {
   );
   return;
 }
-const handleEditMedication = (medication) => {
-  setEditingMedicationId(medication.id);
-
-  setName(medication.name || "");
-  setDosage(medication.dosage || "");
-  setDosageType(medication.dosageType || "Tablet");
-  setPeriod(medication.period || "Morning");
-  setInstructions(medication.instructions || "");
-  setInventory(
-    medication.inventory != null ? medication.inventory.toString() : ""
-  );
-  setReminderTimes(
-    Array.isArray(medication.reminderTimes)
-      ? [...medication.reminderTimes]
-      : []
-  );
-};
 
 const newMed = {
   id: medicationId,
@@ -396,8 +384,6 @@ const newMed = {
   taken: false,
   takenAt: null,
 };
-console.log("Current reminderTimes state:", reminderTimes);
-console.log("Reminder times:", JSON.stringify(reminderTimes));
 setMedications((prev) => [...prev, newMed]);
 
   // Reset form
@@ -410,14 +396,95 @@ setMedications((prev) => [...prev, newMed]);
   setReminderTimes([]);
 };
 
+  // Open the edit form for a given medication
+  const handleStartEditMedication = (med) => {
+    setEditingMedicationId(med.id);
+  };
+
+  // Close the edit form without saving
+  const handleCancelEditMedication = () => {
+    setEditingMedicationId(null);
+  };
+
+  // Save an edited medication: reschedule all its notifications from scratch
+  // so reminder-time changes, additions, and removals are always reflected.
+  const handleSaveEditedMedication = async (updatedFields) => {
+    const medicationId = editingMedicationId;
+    const original = medications.find((med) => med.id === medicationId);
+    if (!original) return;
+
+    try {
+      if (original.notificationIds && original.notificationIds.length > 0) {
+        await NotificationService.cancelMedicationReminders(
+          original.notificationIds
+        );
+      }
+    } catch (error) {
+      console.error("Failed to cancel existing reminders during edit:", error);
+      alert(
+        "The medication could not be updated because its existing reminders could not be cancelled. Please try again."
+      );
+      return;
+    }
+
+    const notificationIds = [];
+
+    try {
+      for (let index = 0; index < updatedFields.reminderTimes.length; index++) {
+        const reminderTime = updatedFields.reminderTimes[index];
+
+        const notificationId = NotificationService.generateNotificationId(
+          medicationId,
+          index + 1
+        );
+
+        await NotificationService.scheduleMedicationReminder({
+          notificationId,
+          medicationName: updatedFields.name.trim(),
+          reminderTime,
+        });
+
+        notificationIds.push(notificationId);
+      }
+    } catch (error) {
+      console.error("Failed to reschedule medication reminders:", error);
+      alert(
+        "The medication could not be updated because one or more reminders failed to reschedule."
+      );
+      return;
+    }
+
+    setMedications((prev) =>
+      prev.map((med) =>
+        med.id === medicationId
+          ? {
+              ...med,
+              name: updatedFields.name.trim(),
+              dosage: updatedFields.dosage || "As directed",
+              dosageType: updatedFields.dosageType,
+              period: updatedFields.period,
+              instructions:
+                updatedFields.instructions || "No special instructions",
+              inventory:
+                updatedFields.inventory !== ""
+                  ? Number(updatedFields.inventory)
+                  : null,
+              reminderTimes: [...updatedFields.reminderTimes],
+              notificationIds,
+            }
+          : med
+      )
+    );
+
+    setEditingMedicationId(null);
+  };
+
 const handleTestNotification = async () => {
   try {
     const permission = await NotificationService.checkPermission();
-console.log("Permission before request:", permission);
 
     if (permission.display !== "granted") {
       const request = await NotificationService.requestPermission();
-console.log("Permission after request:", request);
 
       if (request.display !== "granted") {
         alert("Notification permission denied.");
@@ -440,12 +507,35 @@ console.log("Permission after request:", request);
 };
 
   // Delete medication
-  const deleteMedication = (id) => {
+  const deleteMedication = async (id) => {
   if (
     window.confirm(
       "Are you sure you want to remove this medication from your schedule?"
     )
   ) {
+    const medicationToDelete = medications.find((med) => med.id === id);
+
+    // Cancel any scheduled notifications so they don't keep firing
+    // for a medication that no longer exists.
+    if (
+      medicationToDelete?.notificationIds &&
+      medicationToDelete.notificationIds.length > 0
+    ) {
+      try {
+        await NotificationService.cancelMedicationReminders(
+          medicationToDelete.notificationIds
+        );
+      } catch (error) {
+        console.error(
+          "Failed to cancel reminders for deleted medication:",
+          error
+        );
+        // We still remove the medication even if cancellation fails,
+        // since leaving it stuck in the list is worse than a stray
+        // notification the user can dismiss manually.
+      }
+    }
+
     setMedications((prev) => prev.filter((med) => med.id !== id));
   }
 };
@@ -662,10 +752,112 @@ const getPeriodIcon = (period) => {
   return <i className="fa-solid fa-moon icon-evening"></i>;
 };
  
+  // Search + status filter applied across all periods (RC5)
+  const visibleMedications = React.useMemo(() => {
+    const query = medSearchQuery.trim().toLowerCase();
+
+    return medications.filter((med) => {
+      if (query) {
+        const haystack = `${med.name} ${med.dosage} ${med.instructions}`.toLowerCase();
+        if (!haystack.includes(query)) return false;
+      }
+
+      const missed = checkIfMissed(med);
+
+      if (medStatusFilter === 'taken' && !med.taken) return false;
+      if (medStatusFilter === 'pending' && (med.taken || missed)) return false;
+      if (medStatusFilter === 'missed' && !missed) return false;
+
+      return true;
+    });
+  }, [medications, medSearchQuery, medStatusFilter, currentHour]);
+
+  const sortMedications = (meds) => {
+    const sorted = [...meds];
+
+    if (medSortBy === 'name') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      // Sort by earliest reminder time; meds with no reminder times sort last.
+      sorted.sort((a, b) => {
+        const aTime =
+          Array.isArray(a.reminderTimes) && a.reminderTimes.length > 0
+            ? a.reminderTimes[0]
+            : '99:99';
+        const bTime =
+          Array.isArray(b.reminderTimes) && b.reminderTimes.length > 0
+            ? b.reminderTimes[0]
+            : '99:99';
+        return aTime.localeCompare(bTime);
+      });
+    }
+
+    return sorted;
+  };
+
+  const hasActiveMedFilters =
+    medSearchQuery.trim() !== '' || medStatusFilter !== 'all';
+  const noMedSearchResults =
+    medications.length > 0 && visibleMedications.length === 0;
+
+  const clearMedFilters = () => {
+    setMedSearchQuery('');
+    setMedStatusFilter('all');
+  };
+
+  // Overall adherence stats, derived from the last 7 saved daily scores (RC5)
+  const overallAdherenceStats = React.useMemo(() => {
+    let totalTaken = 0;
+    let totalPossible = 0;
+
+    history.forEach((record) => {
+      const [takenStr, totalStr] = record.scoreText.split('/');
+      const taken = Number(takenStr);
+      const total = Number(totalStr);
+      if (!Number.isNaN(taken) && !Number.isNaN(total)) {
+        totalTaken += taken;
+        totalPossible += total;
+      }
+    });
+
+    const percentage =
+      totalPossible === 0 ? null : Math.round((totalTaken / totalPossible) * 100);
+
+    return { totalTaken, totalPossible, percentage };
+  }, [history]);
+
+  // Missed-dose counts grouped by medication, most-missed first (RC5)
+  const missedByMedication = React.useMemo(() => {
+    const counts = {};
+    missedHistory.forEach((entry) => {
+      counts[entry.medName] = (counts[entry.medName] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([medName, count]) => ({ medName, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [missedHistory]);
+
+  // Most recent missed-dose log entries, newest first (RC5)
+  const recentMissedEntries = React.useMemo(() => {
+    return [...missedHistory]
+      .sort((a, b) => new Date(b.dateMissed) - new Date(a.dateMissed))
+      .slice(0, 10);
+  }, [missedHistory]);
+
+  const formatDaysAgo = (dateString) => {
+    const startOfToday = new Date().setHours(0, 0, 0, 0);
+    const startOfEntryDay = new Date(dateString).setHours(0, 0, 0, 0);
+    const days = Math.round((startOfToday - startOfEntryDay) / (1000 * 60 * 60 * 24));
+
+    if (days <= 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days} days ago`;
+  };
+
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
-  const filteredMeds = medications.filter(
-    (med) => med.period === timePeriod
+  const filteredMeds = sortMedications(
+    visibleMedications.filter((med) => med.period === timePeriod)
   );
 
   return (
@@ -682,6 +874,7 @@ const getPeriodIcon = (period) => {
       handleUpdateStock={handleUpdateStock}
       toggleTaken={toggleTaken}
       deleteMedication={deleteMedication}
+      onEdit={handleStartEditMedication}
     />
   );
 };
@@ -775,8 +968,21 @@ const completionPercentage =
     ? 0
     : Math.round((takenToday / totalMedications) * 100);
 
+const editingMedication =
+  medications.find((med) => med.id === editingMedicationId) || null;
+
  return (
     <div className="app-container">
+      {/* MEDICATION EDIT MODAL */}
+      {editingMedication && (
+        <EditMedicationForm
+          key={editingMedication.id}
+          med={editingMedication}
+          onSave={handleSaveEditedMedication}
+          onCancel={handleCancelEditMedication}
+        />
+      )}
+
       {/* MISSED DOSE ALERT POPUP */}
       
       {/* 1. TOP BANNER */}
@@ -964,7 +1170,6 @@ const completionPercentage =
             </div>
 <div className="form-group">
   <label>Reminder Times</label>
-<p>Debug reminder count: {reminderTimes.length}</p>
 
   <ReminderTimeEditor
     value={reminderTimes}
@@ -993,7 +1198,64 @@ const completionPercentage =
   </button>
 </div>
           </div>
-          {/* Compliance History Log Bar */}
+
+          {/* Search / Filter / Sort (RC5) */}
+          <div className="schedule-filter-bar">
+            <div className="input-with-mic search-input-wrap">
+              <input
+                type="text"
+                className="med-search-input"
+                placeholder="Search medications..."
+                value={medSearchQuery}
+                onChange={(e) => setMedSearchQuery(e.target.value)}
+                aria-label="Search medications"
+              />
+              {medSearchQuery && (
+                <button
+                  type="button"
+                  className="mic-btn"
+                  onClick={() => setMedSearchQuery('')}
+                  title="Clear search"
+                  aria-label="Clear search"
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              )}
+            </div>
+
+            <select
+              className="senior-select"
+              value={medStatusFilter}
+              onChange={(e) => setMedStatusFilter(e.target.value)}
+              aria-label="Filter by status"
+            >
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="taken">Taken</option>
+              <option value="missed">Missed</option>
+            </select>
+
+            <select
+              className="senior-select"
+              value={medSortBy}
+              onChange={(e) => setMedSortBy(e.target.value)}
+              aria-label="Sort medications"
+            >
+              <option value="time">Sort: Reminder Time</option>
+              <option value="name">Sort: Name (A-Z)</option>
+            </select>
+
+            {hasActiveMedFilters && (
+              <button
+                type="button"
+                className="reset-day-btn"
+                onClick={clearMedFilters}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+
           {/* Compliance History Log Bar */}
 <div className="compliance-tracker-bar" id="adherence">
 <div className="streak-badge-box">
@@ -1032,10 +1294,136 @@ const completionPercentage =
             </div>
           </div>
 
+          {/* Medication Stats & Missed-Dose History (RC5) */}
+          <details className="stats-card">
+            <summary className="stats-card-summary">
+              <span className="stats-card-title">
+                <i className="fa-solid fa-chart-line"></i> Adherence &amp; History
+              </span>
+              <span className="stats-card-preview">
+                <span className="stats-pill stats-pill-good">
+                  {overallAdherenceStats.percentage === null
+                    ? '— % this week'
+                    : `${overallAdherenceStats.percentage}% this week`}
+                </span>
+                <span className="stats-pill stats-pill-warn">
+                  {missedHistory.length} missed
+                </span>
+                <i className="fa-solid fa-chevron-down stats-chevron"></i>
+              </span>
+            </summary>
+
+            <div className="stats-card-body">
+              <div className="stats-tiles-row">
+                <div className="stat-tile">
+                  <div
+                    className="stat-ring"
+                    style={{
+                      '--pct': overallAdherenceStats.percentage ?? 0,
+                    }}
+                  >
+                    <span>
+                      {overallAdherenceStats.percentage === null
+                        ? '—'
+                        : `${overallAdherenceStats.percentage}%`}
+                    </span>
+                  </div>
+                  <div className="stat-tile-caption">
+                    <span className="stat-tile-label">7-Day Adherence</span>
+                    {overallAdherenceStats.totalPossible > 0 && (
+                      <span className="stat-tile-sub">
+                        {overallAdherenceStats.totalTaken}/
+                        {overallAdherenceStats.totalPossible} doses taken
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="stat-tile stat-tile-count">
+                  <span className="stat-big-num">{missedHistory.length}</span>
+                  <span className="stat-tile-label">Missed Doses Logged</span>
+                </div>
+              </div>
+
+              {missedByMedication.length > 0 && (
+                <div className="stats-section">
+                  <h4>Most Frequently Missed</h4>
+                  <div className="chip-row">
+                    {missedByMedication.slice(0, 5).map((entry) => (
+                      <span className="missed-chip" key={entry.medName}>
+                        {entry.medName}
+                        <span className="missed-chip-count">
+                          {entry.count}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="stats-section">
+                <h4>Recent Missed Doses</h4>
+                {recentMissedEntries.length === 0 ? (
+                  <p className="stats-empty-note">
+                    No missed doses logged yet — keep it up!
+                  </p>
+                ) : (
+                  <>
+                    <ul className="missed-log-compact">
+                      {recentMissedEntries.slice(0, 5).map((entry) => (
+                        <li key={entry.id}>
+                          <span className="log-dot" aria-hidden="true"></span>
+                          <span className="log-text">
+                            <strong>{entry.medName}</strong>
+                            <span className="log-period">
+                              {' '}
+                              &middot; {entry.period}
+                            </span>
+                          </span>
+                          <span className="log-time">
+                            {formatDaysAgo(entry.dateMissed)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    {recentMissedEntries.length > 5 && (
+                      <p className="stats-more-note">
+                        +{recentMissedEntries.length - 5} more in the last 10
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </details>
+
           <div className="schedule-timeline-container">
-            {renderMedGroup('Morning', 'Morning Routine')}
-            {renderMedGroup('Afternoon', 'Afternoon Routine')}
-           {renderMedGroup('Evening', 'Evening / Night Routine')}
+            {noMedSearchResults ? (
+              <div className="empty-period-state">
+                <i
+                  className="fa-solid fa-magnifying-glass empty-period-icon"
+                  aria-hidden="true"
+                ></i>
+                <h4>No medications match your search</h4>
+                <p className="empty-period-text">
+                  Try a different search term, or clear your filters to see
+                  everything again.
+                </p>
+                <button
+                  type="button"
+                  className="reset-day-btn"
+                  onClick={clearMedFilters}
+                >
+                  Clear Filters
+                </button>
+              </div>
+            ) : (
+              <>
+                {renderMedGroup('Morning', 'Morning Routine')}
+                {renderMedGroup('Afternoon', 'Afternoon Routine')}
+                {renderMedGroup('Evening', 'Evening / Night Routine')}
+              </>
+            )}
           </div>
         </section>
 

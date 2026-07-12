@@ -1332,3 +1332,317 @@ h1, h2, h3, .nav-logo {
 .med-reminder-list li {
   margin-bottom: 4px;
 }
+/* ============================================================
+   RC5 — Checklist Search / Filter / Sort
+   ============================================================ */
+.schedule-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-input-wrap {
+  flex: 1;
+  min-width: 220px;
+}
+
+.med-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  font-size: 1.05rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #0f172a;
+  outline: none;
+}
+
+/* Note: unlike .form-group input, this uses a visible brand-color focus
+   ring rather than a white-on-white border, so keyboard/search focus
+   stays visible. */
+.med-search-input:focus {
+  border-color: #E84855;
+  background-color: #ffffff;
+}
+
+.schedule-filter-bar .senior-select {
+  min-width: 170px;
+}
+
+@media (max-width: 700px) {
+  .schedule-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .schedule-filter-bar .senior-select,
+  .search-input-wrap {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   RC5 — Adherence & Missed-Dose History Card
+   ============================================================ */
+.stats-card {
+  margin: 0 0 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.stats-card-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 1rem 1.25rem;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-weight: 700;
+  color: #1e293b;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stats-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.stats-card-summary:focus-visible {
+  outline: 3px solid rgba(232, 72, 85, 0.25);
+  outline-offset: 2px;
+}
+
+.stats-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stats-card-title i {
+  color: #15803d;
+}
+
+.stats-card-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stats-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.stats-pill-good {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.stats-pill-warn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.stats-chevron {
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.stats-card[open] .stats-chevron {
+  transform: rotate(180deg);
+}
+
+.stats-card-body {
+  padding: 0.25rem 1.25rem 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.stats-tiles-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stat-ring {
+  --pct: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(#15803d calc(var(--pct) * 1%), #e2e8f0 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.stat-ring::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.stat-ring span {
+  position: relative;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.stat-tile-caption {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-tile-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+}
+
+.stat-tile-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.stat-tile-count {
+  padding-left: 4px;
+}
+
+.stat-big-num {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+  margin-right: 10px;
+}
+
+.stats-section {
+  margin-top: 1.25rem;
+}
+
+.stats-section h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin: 0 0 0.6rem;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.missed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+.missed-chip-count {
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 700;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+}
+
+.missed-log-compact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.missed-log-compact li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.missed-log-compact li:last-child {
+  border-bottom: none;
+}
+
+.log-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+}
+
+.log-text {
+  flex: 1;
+  color: #1e293b;
+}
+
+.log-period {
+  color: #94a3b8;
+}
+
+.log-time {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.stats-empty-note,
+.stats-more-note {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.stats-more-note {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .stats-tiles-row {
+    gap: 1rem;
+  }
+  .stats-card-preview {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

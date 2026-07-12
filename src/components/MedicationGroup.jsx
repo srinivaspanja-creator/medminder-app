@@ -57,7 +57,7 @@ onEdit,
                   handleUpdateStock={handleUpdateStock}
                   toggleTaken={toggleTaken}
                   deleteMedication={deleteMedication}
-
+                  onEdit={onEdit}
                 />
               );
             })}

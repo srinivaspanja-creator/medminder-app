@@ -11,6 +11,7 @@ function MedicationCard({
   handleUpdateStock,
   toggleTaken,
   deleteMedication,
+  onEdit,
 })
  {
   return (
@@ -60,8 +61,12 @@ function MedicationCard({
         <p className="med-dosage">
           <i className="fa-solid fa-prescription-bottle-medical icon-inline"></i>
           <strong>Dosage:</strong> {med.dosage}
+        </p>
+
+<p className="med-instructions">
+  <i className="fa-solid fa-file-medical icon-inline"></i>
+  {med.instructions}
 </p>
-        
 
 {Array.isArray(med.reminderTimes) &&
   med.reminderTimes.length > 0 && (
@@ -117,9 +122,16 @@ function MedicationCard({
           ) : (
             "Mark as Taken"
           )}
-</button>
+        </button>
 
-      
+        <button
+          className="edit-btn"
+          onClick={() => onEdit?.(med)}
+          title="Edit Medication"
+        >
+          <i className="fa-solid fa-pen"></i> Edit
+        </button>
+
         <button
           className="delete-btn"
           onClick={() => deleteMedication(med.id)}
