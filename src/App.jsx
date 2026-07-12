@@ -84,6 +84,7 @@ const [period, setPeriod] = useState('Morning');
 const [instructions, setInstructions] = useState('');
 const [inventory, setInventory] = useState('');
 const [reminderTimes, setReminderTimes] = useState([]);
+const [editingMedicationId, setEditingMedicationId] = useState(null);
   
 
 // Streak & History states
