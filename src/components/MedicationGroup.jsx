@@ -14,6 +14,7 @@ function MedicationGroup({
   handleUpdateStock,
   toggleTaken,
   deleteMedication,
+onEdit,
 }) {
   return (
     <div className="time-period-group">
@@ -56,6 +57,7 @@ function MedicationGroup({
                   handleUpdateStock={handleUpdateStock}
                   toggleTaken={toggleTaken}
                   deleteMedication={deleteMedication}
+
                 />
               );
             })}

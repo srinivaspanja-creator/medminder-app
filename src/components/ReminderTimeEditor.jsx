@@ -17,7 +17,8 @@ export default function ReminderTimeEditor({ value = [], onChange }) {
   };
 
   const removeTime = (timeToRemove) => {
-    onChange(value.filter((t) => t !== timeToRemove));
+    console.log("ReminderTimeEditor sending:", updated);
+onChange(updated);
   };
 
   return (
@@ -31,7 +32,10 @@ export default function ReminderTimeEditor({ value = [], onChange }) {
           id="reminder-time"
           type="time"
           value={time}
-          onChange={(e) => setTime(e.target.value)}
+          onChange={(e) => {
+    console.log("Selected time:", e.target.value);
+    setTime(e.target.value);
+}}
         />
 
         <button

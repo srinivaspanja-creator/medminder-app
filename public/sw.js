@@ -1,24 +1,18 @@
 const CACHE_NAME = 'mymedminder-v2';
 
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => caches.delete(cacheName))
-      );
-    })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
+    fetch(event.request).catch(async () => {
+      const cachedResponse = await caches.match(event.request);
+
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return new Response("Offline", {
+        status: 503,
+        statusText: "Service Unavailable",
+      });
     })
   );
 });

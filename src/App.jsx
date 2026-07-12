@@ -10,7 +10,7 @@ import AppointmentCard from "./components/AppointmentCard";
 import BannerStrip from "./components/BannerStrip";
 import VaultSetup from "./components/VaultSetup";
 import ReminderTimeEditor from "./components/ReminderTimeEditor";
-
+import NotificationService from "./services/notificationService";
 
 import {
   hasInventory,
@@ -37,6 +37,10 @@ const requestNotificationPermission = async () => {
 useEffect(() => {
   requestNotificationPermission();
 }, []);
+
+// Editing state
+  
+
 
   // Initialize state from LocalStorage
   const [medications, setMedications] = useLocalStorage(
@@ -323,7 +327,7 @@ const toggleTaken = (id) => {
   );
 };
   // Add medication
-const handleAddMedication = (e) => {
+const handleAddMedication = async (e) => {
   e.preventDefault();
 
   if (!name.trim()) {
@@ -331,20 +335,52 @@ const handleAddMedication = (e) => {
     return;
   }
 
-  const newMed = {
-    id: Date.now(),
-    name: name.trim(),
-    dosage: dosage || "As directed",
-    dosageType,
-    period,
-    instructions: instructions || "No special instructions",
-    reminderTimes: [...reminderTimes],
-    inventory: inventory !== "" ? Number(inventory) : null,
-    taken: false,
-    takenAt: null,
-  };
-console.log("Saving medication:", newMed);
-  setMedications((prev) => [...prev, newMed]);
+ const medicationId = Date.now();
+
+const notificationIds = [];
+
+try {
+  for (let index = 0; index < reminderTimes.length; index++) {
+    const reminderTime = reminderTimes[index];
+
+    const notificationId =
+      NotificationService.generateNotificationId(
+        medicationId,
+        index + 1
+      );
+
+    await NotificationService.scheduleMedicationReminder({
+      notificationId,
+      medicationName: name.trim(),
+      reminderTime,
+    });
+
+    notificationIds.push(notificationId);
+  }
+} catch (error) {
+  console.error("Failed to schedule medication reminders:", error);
+  alert(
+    "The medication could not be saved because one or more reminders failed to schedule."
+  );
+  return;
+}
+
+const newMed = {
+  id: medicationId,
+  name: name.trim(),
+  dosage: dosage || "As directed",
+  dosageType,
+  period,
+  instructions: instructions || "No special instructions",
+  reminderTimes: [...reminderTimes],
+  notificationIds,
+  inventory: inventory !== "" ? Number(inventory) : null,
+  taken: false,
+  takenAt: null,
+};
+console.log("Current reminderTimes state:", reminderTimes);
+console.log("Reminder times:", JSON.stringify(reminderTimes));
+setMedications((prev) => [...prev, newMed]);
 
   // Reset form
   setName("");
@@ -354,6 +390,35 @@ console.log("Saving medication:", newMed);
   setInstructions("");
   setInventory("");
   setReminderTimes([]);
+};
+
+const handleTestNotification = async () => {
+  try {
+    const permission = await NotificationService.checkPermission();
+console.log("Permission before request:", permission);
+
+    if (permission.display !== "granted") {
+      const request = await NotificationService.requestPermission();
+console.log("Permission after request:", request);
+
+      if (request.display !== "granted") {
+        alert("Notification permission denied.");
+        return;
+      }
+    }
+
+    const reminderTime = new Date(Date.now() + 15000);
+
+    await NotificationService.scheduleMedicationReminder({
+      notificationId: Date.now(),
+      medicationName: "MyMedMinder Test",
+      reminderTime,
+    });
+
+    alert("Test notification scheduled for 15 seconds from now.");
+  } catch (error) {
+    console.error("Failed to schedule test notification:", error);
+  }
 };
 
   // Delete medication
@@ -692,7 +757,6 @@ const completionPercentage =
     ? 0
     : Math.round((takenToday / totalMedications) * 100);
 
-console.log(completionPercentage);
  return (
     <div className="app-container">
       {/* MISSED DOSE ALERT POPUP */}
@@ -882,6 +946,7 @@ console.log(completionPercentage);
             </div>
 <div className="form-group">
   <label>Reminder Times</label>
+<p>Debug reminder count: {reminderTimes.length}</p>
 
   <ReminderTimeEditor
     value={reminderTimes}
@@ -1119,7 +1184,17 @@ console.log(completionPercentage);
               })}
             </div>
          )}
-        </section>
+               </section>
+      </div>
+
+      <div style={{ textAlign: "center", margin: "20px 0" }}>
+        <button
+          type="button"
+          className="secondary-btn"
+          onClick={handleTestNotification}
+        >
+          Test Notification
+        </button>
       </div>
 
       <footer className="app-footer">
@@ -1172,6 +1247,7 @@ function ForgotPinFlow({ question, answerInput, setAnswerInput, onVerify, onCanc
           placeholder="Choose a new PIN"
           value={newPin}
           onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+
         />
       </div>
       <button className="add-med-btn" onClick={handleSubmit}>Reset PIN & Unlock</button>
@@ -1179,4 +1255,5 @@ function ForgotPinFlow({ question, answerInput, setAnswerInput, onVerify, onCanc
     </div>
   );
 }
+
 export default App;

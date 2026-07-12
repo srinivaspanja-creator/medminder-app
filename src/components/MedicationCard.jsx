@@ -11,7 +11,8 @@ function MedicationCard({
   handleUpdateStock,
   toggleTaken,
   deleteMedication,
-}) {
+})
+ {
   return (
     <div
       className={`med-card ${med.taken ? "med-taken" : ""} ${
@@ -59,28 +60,26 @@ function MedicationCard({
         <p className="med-dosage">
           <i className="fa-solid fa-prescription-bottle-medical icon-inline"></i>
           <strong>Dosage:</strong> {med.dosage}
-        </p>
-
-<p className="med-instructions">
-  <i className="fa-solid fa-file-medical icon-inline"></i>
-  {med.instructions}
 </p>
+        
 
-{Array.isArray(med.reminderTimes) && med.reminderTimes.length > 0 && (
-  <div className="med-reminder-times">
-    <p className="med-reminder-title">
-      <i className="fa-regular fa-clock icon-inline"></i>
-      <strong> Reminder Times:</strong>
-    </p>
-
-    <ul className="med-reminder-list">
-      {med.reminderTimes.map((time) => (
-        <li key={time}>{time}</li>
-      ))}
-    </ul>
-  </div>
+{Array.isArray(med.reminderTimes) &&
+  med.reminderTimes.length > 0 && (
+    <div className="reminder-times">
+      <h4>Reminder Times</h4>
+      <ul>
+        {med.reminderTimes.map((time) => (
+          <li key={time}>
+  {new Date(`2000-01-01T${time}`).toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</li>
+        ))}
+      </ul>
+    </div>
 )}
-
         <InventoryStatus
           med={med}
           editingStockId={editingStockId}
@@ -118,8 +117,9 @@ function MedicationCard({
           ) : (
             "Mark as Taken"
           )}
-        </button>
+</button>
 
+      
         <button
           className="delete-btn"
           onClick={() => deleteMedication(med.id)}
