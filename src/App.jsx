@@ -479,32 +479,6 @@ setMedications((prev) => [...prev, newMed]);
     setEditingMedicationId(null);
   };
 
-const handleTestNotification = async () => {
-  try {
-    const permission = await NotificationService.checkPermission();
-
-    if (permission.display !== "granted") {
-      const request = await NotificationService.requestPermission();
-
-      if (request.display !== "granted") {
-        alert("Notification permission denied.");
-        return;
-      }
-    }
-
-    const reminderTime = new Date(Date.now() + 15000);
-
-    await NotificationService.scheduleMedicationReminder({
-      notificationId: Date.now(),
-      medicationName: "MyMedMinder Test",
-      reminderTime,
-    });
-
-    alert("Test notification scheduled for 15 seconds from now.");
-  } catch (error) {
-    console.error("Failed to schedule test notification:", error);
-  }
-};
 
   // Delete medication
   const deleteMedication = async (id) => {
@@ -1593,15 +1567,7 @@ const editingMedication =
                </section>
       </div>
 
-      <div style={{ textAlign: "center", margin: "20px 0" }}>
-        <button
-          type="button"
-          className="secondary-btn"
-          onClick={handleTestNotification}
-        >
-          Test Notification
-        </button>
-      </div>
+      
 
       <footer className="app-footer">
         <div className="footer-content">
