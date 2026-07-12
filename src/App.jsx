@@ -365,6 +365,23 @@ try {
   );
   return;
 }
+const handleEditMedication = (medication) => {
+  setEditingMedicationId(medication.id);
+
+  setName(medication.name || "");
+  setDosage(medication.dosage || "");
+  setDosageType(medication.dosageType || "Tablet");
+  setPeriod(medication.period || "Morning");
+  setInstructions(medication.instructions || "");
+  setInventory(
+    medication.inventory != null ? medication.inventory.toString() : ""
+  );
+  setReminderTimes(
+    Array.isArray(medication.reminderTimes)
+      ? [...medication.reminderTimes]
+      : []
+  );
+};
 
 const newMed = {
   id: medicationId,
