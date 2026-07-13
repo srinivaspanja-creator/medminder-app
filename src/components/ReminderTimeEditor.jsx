@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 
 export default function ReminderTimeEditor({ value = [], onChange }) {
   const [time, setTime] = useState("");
+  const inputId = useId();
 
   const addTime = () => {
     if (!time) return;
@@ -23,13 +24,13 @@ export default function ReminderTimeEditor({ value = [], onChange }) {
 
   return (
     <div className="reminder-time-editor">
-      <label htmlFor="reminder-time">
+      <label htmlFor={inputId}>
         Reminder Time
       </label>
 
       <div className="reminder-time-row">
         <input
-          id="reminder-time"
+          id={inputId}
           type="time"
           value={time}
           onChange={(e) => setTime(e.target.value)}
