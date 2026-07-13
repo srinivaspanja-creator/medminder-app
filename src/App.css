@@ -271,6 +271,29 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   border-color: #C0392B;
 }
 
+/* Vault "Add Prescription Photo" control is a <label> (wraps a hidden
+   file input), but it reused .add-med-btn — a class built for <button>
+   elements. <label> is inline by default, so width:100% was ignored
+   and the vertical padding rendered without reserving space in the
+   document flow, causing it to visually overlap the "Lock Vault"
+   button below it. Fixing display + giving the row real flex layout. */
+.vault-upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.vault-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: auto;
+  margin-top: 0;
+  cursor: pointer;
+}
+
 /* Time-of-Day Blocks */
 .schedule-timeline-container {
   display: flex;
