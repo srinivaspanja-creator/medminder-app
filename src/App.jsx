@@ -979,7 +979,7 @@ const editingMedication =
       </div>
 <section className="dashboard-summary" aria-label="Today's medication summary">
   <div className="summary-card">
-    <i className="fa-solid fa-pills summary-icon"></i>
+    <i className="fa-solid fa-pills summary-icon" aria-hidden="true"></i>
    <div className="summary-content">
   <span className="summary-value">{remainingToday}</span>
 
@@ -1008,7 +1008,7 @@ const editingMedication =
   </div>
 
   <div className="summary-card">
-    <i className="fa-solid fa-circle-check summary-icon"></i>
+    <i className="fa-solid fa-circle-check summary-icon" aria-hidden="true"></i>
     <div>
       <span className="summary-value">{takenToday}</span>
       <span className="summary-label">Taken Today</span>
@@ -1026,24 +1026,24 @@ const editingMedication =
   </div>
 </section>
       <nav className="quick-nav-bar">
-        <button onClick={() => document.getElementById('add-medication').scrollIntoView({ behavior: 'smooth' })}>
-          <i className="fa-solid fa-circle-plus"></i>
+        <button type="button" onClick={() => document.getElementById('add-medication').scrollIntoView({ behavior: 'smooth' })}>
+          <i className="fa-solid fa-circle-plus" aria-hidden="true"></i>
           <span>Add</span>
         </button>
-        <button onClick={() => document.getElementById('checklist').scrollIntoView({ behavior: 'smooth' })}>
-          <i className="fa-solid fa-calendar-check"></i>
+        <button type="button" onClick={() => document.getElementById('checklist').scrollIntoView({ behavior: 'smooth' })}>
+          <i className="fa-solid fa-calendar-check" aria-hidden="true"></i>
           <span>Checklist</span>
         </button>
-       <button onClick={() => document.getElementById('adherence').scrollIntoView({ behavior: 'smooth' })}>
-          <i className="fa-solid fa-chart-line"></i>
+       <button type="button" onClick={() => document.getElementById('adherence').scrollIntoView({ behavior: 'smooth' })}>
+          <i className="fa-solid fa-chart-line" aria-hidden="true"></i>
           <span>Streak</span>
         </button>
-        <button onClick={() => document.getElementById('vault').scrollIntoView({ behavior: 'smooth' })}>
-          <i className="fa-solid fa-lock"></i>
+        <button type="button" onClick={() => document.getElementById('vault').scrollIntoView({ behavior: 'smooth' })}>
+          <i className="fa-solid fa-lock" aria-hidden="true"></i>
           <span>Vault</span>
         </button>
-        <button onClick={() => document.getElementById('appointments').scrollIntoView({ behavior: 'smooth' })}>
-          <i className="fa-solid fa-user-doctor"></i>
+        <button type="button" onClick={() => document.getElementById('appointments').scrollIntoView({ behavior: 'smooth' })}>
+          <i className="fa-solid fa-user-doctor" aria-hidden="true"></i>
           <span>Visits</span>
         </button>
       </nav>
@@ -1051,31 +1051,37 @@ const editingMedication =
         {/* 2. FORM SECTION */}
         <section className="form-section" id="add-medication">
  
-  <h2><i className="fa-solid fa-circle-plus"></i> Add New Medication</h2>
+  <h2><i className="fa-solid fa-circle-plus" aria-hidden="true"></i> Add New Medication</h2>
          <form onSubmit={handleAddMedication}>
            <div className="form-group">
-              <label>Medication Name *</label>
+              <label htmlFor="add-med-name">Medication Name *</label>
               <div className="input-with-mic">
                 <input 
+                  id="add-med-name"
+                  name="medication-name"
                   type="text" 
                   placeholder="e.g., Amoxicillin" 
                   value={name} 
                   onChange={(e) => setName(e.target.value)} 
+                  required
                 />
                 <button
                   type="button"
                   className="mic-btn"
                   onClick={() => startVoiceInput(setName)}
                   title="Speak to fill this field"
+                  aria-label="Use voice input for medication name"
                 >
-                  <i className="fa-solid fa-microphone"></i>
+                  <i className="fa-solid fa-microphone" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
             <div className="form-group">
-  <label>Dosage</label>
+  <label htmlFor="add-med-dosage">Dosage</label>
   <div className="input-with-mic">
     <input 
+      id="add-med-dosage"
+      name="dosage"
       type="text" 
       placeholder="e.g., 500mg" 
       value={dosage} 
@@ -1086,15 +1092,16 @@ const editingMedication =
       className="mic-btn"
       onClick={() => startVoiceInput(setDosage)}
       title="Speak to fill this field"
+      aria-label="Use voice input for dosage"
     >
-      <i className="fa-solid fa-microphone"></i>
+      <i className="fa-solid fa-microphone" aria-hidden="true"></i>
     </button>
   </div>
 </div>
 
 <div className="form-group">
-  <label>Form/Type</label>
-  <select value={dosageType} onChange={(e) => setDosageType(e.target.value)} className="senior-select">
+  <label htmlFor="add-med-dosage-type">Form/Type</label>
+  <select id="add-med-dosage-type" name="dosage-type" value={dosageType} onChange={(e) => setDosageType(e.target.value)} className="senior-select">
     <option value="Tablet">Tablet</option>
     <option value="Capsule">Capsule</option>
     <option value="Syrup">Syrup</option>
@@ -1106,17 +1113,19 @@ const editingMedication =
   </select>
 </div>
             <div className="form-group">
-              <label>Time Period</label>
-              <select value={period} onChange={(e) => setPeriod(e.target.value)}>
+              <label htmlFor="add-med-period">Time Period</label>
+              <select id="add-med-period" name="period" value={period} onChange={(e) => setPeriod(e.target.value)}>
                 <option value="Morning">Morning</option>
                 <option value="Afternoon">Afternoon</option>
                 <option value="Evening">Evening / Night</option>
               </select>
             </div>
 <div className="form-group">
-  <label>Instructions</label>
+  <label htmlFor="add-med-instructions">Instructions</label>
   <div className="input-with-mic">
     <input 
+      id="add-med-instructions"
+      name="instructions"
       type="text" 
       placeholder="e.g., Take with breakfast" 
       value={instructions} 
@@ -1127,13 +1136,16 @@ const editingMedication =
       className="mic-btn"
       onClick={() => startVoiceInput(setInstructions)}
       title="Speak to fill this field"
+      aria-label="Use voice input for instructions"
     >
-      <i className="fa-solid fa-microphone"></i>
+      <i className="fa-solid fa-microphone" aria-hidden="true"></i>
     </button>
   </div>
 </div>            <div className="form-group">
-              <label>Current Pill Count (Optional Stock Tracker)</label>
+              <label htmlFor="add-med-inventory">Current Pill Count (Optional Stock Tracker)</label>
               <input
+                id="add-med-inventory"
+                name="inventory"
                 type="number"
                 min="0"
                 placeholder="e.g., 30"
@@ -1143,7 +1155,7 @@ const editingMedication =
 
             </div>
 <div className="form-group">
-  <label>Reminder Times</label>
+  <p className="form-group-heading">Reminder Times</p>
 
   <ReminderTimeEditor
     value={reminderTimes}
@@ -1159,16 +1171,16 @@ const editingMedication =
           <div className="schedule-header-block">
             <div>
               <h2>
-                <i className="fa-solid fa-calendar-check header-form-icon"></i> Today's Checklist
+                <i className="fa-solid fa-calendar-check header-form-icon" aria-hidden="true"></i> Today's Checklist
               </h2>
             
             </div>
           <div className="header-action-buttons">
-  <button className="print-schedule-btn" onClick={() => window.print()}>
-    <i className="fa-solid fa-print"></i> Print Report for Doctor
+  <button type="button" className="print-schedule-btn" onClick={() => window.print()}>
+    <i className="fa-solid fa-print" aria-hidden="true"></i> Print Report for Doctor
   </button>
-  <button className="export-csv-btn" onClick={handleExportCSV}>
-    <i className="fa-solid fa-file-csv"></i> Export CSV
+  <button type="button" className="export-csv-btn" onClick={handleExportCSV}>
+    <i className="fa-solid fa-file-csv" aria-hidden="true"></i> Export CSV
   </button>
 </div>
           </div>
@@ -1192,7 +1204,7 @@ const editingMedication =
                   title="Clear search"
                   aria-label="Clear search"
                 >
-                  <i className="fa-solid fa-xmark"></i>
+                  <i className="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
               )}
             </div>
@@ -1272,7 +1284,7 @@ const editingMedication =
           <details className="stats-card">
             <summary className="stats-card-summary">
               <span className="stats-card-title">
-                <i className="fa-solid fa-chart-line"></i> Adherence &amp; History
+                <i className="fa-solid fa-chart-line" aria-hidden="true"></i> Adherence &amp; History
               </span>
               <span className="stats-card-preview">
                 <span className="stats-pill stats-pill-good">
@@ -1283,7 +1295,7 @@ const editingMedication =
                 <span className="stats-pill stats-pill-warn">
                   {missedHistory.length} missed
                 </span>
-                <i className="fa-solid fa-chevron-down stats-chevron"></i>
+                <i className="fa-solid fa-chevron-down stats-chevron" aria-hidden="true"></i>
               </span>
             </summary>
 
@@ -1403,7 +1415,7 @@ const editingMedication =
 
         {/* 4. PRESCRIPTION VAULT SECTION */}
         <section className="form-section" id="vault">
-          <h2><i className="fa-solid fa-lock"></i> Prescription Vault</h2>
+          <h2><i className="fa-solid fa-lock" aria-hidden="true"></i> Prescription Vault</h2>
 
           {!vaultPin ? (
             // FIRST TIME SETUP
@@ -1464,17 +1476,18 @@ const editingMedication =
             // UNLOCKED - SHOW VAULT CONTENTS
             <div className="vault-unlocked">
               <div className="vault-upload-row">
-                <label className="add-med-btn vault-upload-btn">
-                  <i className="fa-solid fa-camera"></i> Add Prescription Photo
+                <label htmlFor="vault-photo-upload" className="add-med-btn vault-upload-btn">
+                  <i className="fa-solid fa-camera" aria-hidden="true"></i> Add Prescription Photo
                   <input 
+                    id="vault-photo-upload"
                     type="file" 
                     accept="image/*" 
                     onChange={handleAddVaultPhoto} 
-                    style={{ display: 'none' }} 
+                    className="sr-only"
                   />
                 </label>
-                <button className="reset-day-btn" onClick={() => setVaultUnlocked(false)}>
-                  <i className="fa-solid fa-lock"></i> Lock Vault
+                <button type="button" className="reset-day-btn" onClick={() => setVaultUnlocked(false)}>
+                  <i className="fa-solid fa-lock" aria-hidden="true"></i> Lock Vault
                 </button>
               </div>
 
@@ -1489,11 +1502,13 @@ const editingMedication =
                         {new Date(photo.dateAdded).toLocaleDateString()}
                       </p>
                       <button 
+                        type="button"
                         className="delete-btn vault-delete-btn" 
                         onClick={() => handleDeleteVaultPhoto(photo.id)}
                         title="Delete"
+                        aria-label={`Delete prescription photo from ${new Date(photo.dateAdded).toLocaleDateString()}`}
                       >
-                        <i className="fa-solid fa-trash-can"></i>
+                        <i className="fa-solid fa-trash-can" aria-hidden="true"></i>
                       </button>
                     </div>
                   ))}
@@ -1505,32 +1520,38 @@ const editingMedication =
 
         {/* 5. DOCTOR APPOINTMENTS SECTION */}
         <section className="form-section" id="appointments">
-          <h2><i className="fa-solid fa-user-doctor"></i> Doctor Appointments</h2>
+          <h2><i className="fa-solid fa-user-doctor" aria-hidden="true"></i> Doctor Appointments</h2>
 
           <form onSubmit={handleAddAppointment} className="med-form">
            <div className="form-group">
-  <label>Doctor Name *</label>
+  <label htmlFor="add-appt-doctor">Doctor Name *</label>
   <div className="input-with-mic">
     <input 
+      id="add-appt-doctor"
+      name="doctor-name"
       type="text" 
       placeholder="e.g., Dr. Smith"
       value={doctorName}
       onChange={(e) => setDoctorName(e.target.value)}
+      required
     />
     <button
       type="button"
       className="mic-btn"
       onClick={() => startVoiceInput(setDoctorName)}
       title="Speak to fill this field"
+      aria-label="Use voice input for doctor name"
     >
-      <i className="fa-solid fa-microphone"></i>
+      <i className="fa-solid fa-microphone" aria-hidden="true"></i>
     </button>
   </div>
 </div>
 <div className="form-group">
-  <label>Purpose / Specialty</label>
+  <label htmlFor="add-appt-purpose">Purpose / Specialty</label>
   <div className="input-with-mic">
     <input 
+      id="add-appt-purpose"
+      name="appointment-purpose"
       type="text" 
       placeholder="e.g., Cardiology Follow-up"
       value={appointmentPurpose}
@@ -1541,17 +1562,21 @@ const editingMedication =
       className="mic-btn"
       onClick={() => startVoiceInput(setAppointmentPurpose)}
       title="Speak to fill this field"
+      aria-label="Use voice input for appointment purpose"
     >
-      <i className="fa-solid fa-microphone"></i>
+      <i className="fa-solid fa-microphone" aria-hidden="true"></i>
     </button>
   </div>
 </div>
 <div className="form-group">
-              <label>Appointment Date *</label>
+              <label htmlFor="add-appt-date">Appointment Date *</label>
               <input 
+                id="add-appt-date"
+                name="appointment-date"
                 type="date" 
                 value={appointmentDate}
                 onChange={(e) => setAppointmentDate(e.target.value)}
+                required
               />
             </div>
             <button type="submit" className="add-med-btn">Add Appointment</button>
