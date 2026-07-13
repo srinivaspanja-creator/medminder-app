@@ -838,6 +838,22 @@ const getPeriodIcon = useCallback((period) => {
     return groups;
   }, [visibleMedications, medSortBy]);
 
+  // Quick-nav: scroll to a section AND move keyboard focus there, so
+  // keyboard/screen-reader users land in the new section instead of just
+  // having the page scroll under them with focus left behind.
+  const [activeQuickNav, setActiveQuickNav] = useState('add-medication');
+  const handleQuickNavClick = useCallback((sectionId) => {
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+    setActiveQuickNav(sectionId);
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Slight delay so focus lands after the scroll starts, rather than
+    // fighting it (jumpy behavior on some screen readers otherwise).
+    window.setTimeout(() => {
+      el.focus({ preventScroll: true });
+    }, 300);
+  }, []);
+
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
   const filteredMeds = groupedMedications[timePeriod];
@@ -1024,7 +1040,7 @@ const editingMedication =
   </div>
 
   <div className="summary-card">
-    <span className="summary-icon" aria-hidden="true">🔥</span>
+    <i className="fa-solid fa-fire summary-icon" aria-hidden="true"></i>
     <div>
       <span className="summary-value">{streak}</span>
       <span className="summary-label">
@@ -1034,30 +1050,30 @@ const editingMedication =
   </div>
 </section>
       <nav className="quick-nav-bar">
-        <button type="button" onClick={() => document.getElementById('add-medication').scrollIntoView({ behavior: 'smooth' })}>
+        <button type="button" className={activeQuickNav === 'add-medication' ? 'active' : ''} onClick={() => handleQuickNavClick('add-medication')}>
           <i className="fa-solid fa-circle-plus" aria-hidden="true"></i>
           <span>Add</span>
         </button>
-        <button type="button" onClick={() => document.getElementById('checklist').scrollIntoView({ behavior: 'smooth' })}>
+        <button type="button" className={activeQuickNav === 'checklist' ? 'active' : ''} onClick={() => handleQuickNavClick('checklist')}>
           <i className="fa-solid fa-calendar-check" aria-hidden="true"></i>
           <span>Checklist</span>
         </button>
-       <button type="button" onClick={() => document.getElementById('adherence').scrollIntoView({ behavior: 'smooth' })}>
+       <button type="button" className={activeQuickNav === 'adherence' ? 'active' : ''} onClick={() => handleQuickNavClick('adherence')}>
           <i className="fa-solid fa-chart-line" aria-hidden="true"></i>
           <span>Streak</span>
         </button>
-        <button type="button" onClick={() => document.getElementById('vault').scrollIntoView({ behavior: 'smooth' })}>
+        <button type="button" className={activeQuickNav === 'vault' ? 'active' : ''} onClick={() => handleQuickNavClick('vault')}>
           <i className="fa-solid fa-lock" aria-hidden="true"></i>
           <span>Vault</span>
         </button>
-        <button type="button" onClick={() => document.getElementById('appointments').scrollIntoView({ behavior: 'smooth' })}>
+        <button type="button" className={activeQuickNav === 'appointments' ? 'active' : ''} onClick={() => handleQuickNavClick('appointments')}>
           <i className="fa-solid fa-user-doctor" aria-hidden="true"></i>
           <span>Visits</span>
         </button>
       </nav>
       <div className="main-content">
         {/* 2. FORM SECTION */}
-        <section className="form-section" id="add-medication">
+        <section className="form-section" id="add-medication" tabIndex={-1} aria-label="Add New Medication section">
  
   <h2><i className="fa-solid fa-circle-plus" aria-hidden="true"></i> Add New Medication</h2>
          <form onSubmit={handleAddMedication}>
@@ -1175,7 +1191,7 @@ const editingMedication =
         </section>
 
         {/* 3. SCHEDULE CHECKLIST SECTION */}
-      <section className="schedule-section" id="checklist">
+      <section className="schedule-section" id="checklist" tabIndex={-1} aria-label="Checklist section">
           <div className="schedule-header-block">
             <div>
               <h2>
@@ -1251,7 +1267,7 @@ const editingMedication =
           </div>
 
           {/* Compliance History Log Bar */}
-<div className="compliance-tracker-bar" id="adherence">
+<div className="compliance-tracker-bar" id="adherence" tabIndex={-1} aria-label="Adherence and streak section">
 <div className="streak-badge-box">
               <span className="streak-fire-icon">
               {streak > 0 ? '🔥' : '⭐'}
@@ -1422,7 +1438,7 @@ const editingMedication =
         </section>
 
         {/* 4. PRESCRIPTION VAULT SECTION */}
-        <section className="form-section" id="vault">
+        <section className="form-section" id="vault" tabIndex={-1} aria-label="Prescription Vault section">
           <h2><i className="fa-solid fa-lock" aria-hidden="true"></i> Prescription Vault</h2>
 
           {!vaultPin ? (
@@ -1527,7 +1543,7 @@ const editingMedication =
         </section>
 
         {/* 5. DOCTOR APPOINTMENTS SECTION */}
-        <section className="form-section" id="appointments">
+        <section className="form-section" id="appointments" tabIndex={-1} aria-label="Doctor Appointments section">
           <h2><i className="fa-solid fa-user-doctor" aria-hidden="true"></i> Doctor Appointments</h2>
 
           <form onSubmit={handleAddAppointment} className="med-form">
