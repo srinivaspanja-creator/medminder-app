@@ -1408,37 +1408,59 @@ const editingMedication =
           {!vaultPin ? (
             // FIRST TIME SETUP
             <VaultSetup onSetup={handleSetupVault} />
-          ) : !vaultUnlocked ? (
-            // LOCKED - SHOW PIN ENTRY
-            <div className="vault-locked">
-              {!showForgotPin ? (
-                <>
-                  <p className="vault-lock-message">
-                    <i className="fa-solid fa-shield-halved"></i> This section is locked. Enter your PIN to view prescriptions.
-                  </p>
-                  <input 
-                    type="password" 
-                    maxLength="4"
-                    inputMode="numeric"
-                    placeholder="Enter 4-digit PIN"
-                    value={pinInput}
-                    onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
-                    className="vault-pin-input"
-                  />
-                  <button className="add-med-btn" onClick={handleCheckPin}>Unlock Vault</button>
-                  <p className="vault-forgot-link" onClick={() => setShowForgotPin(true)}>Forgot PIN?</p>
-                </>
-              ) : (
-                <ForgotPinFlow 
-                  question={vaultSecurityQuestion}
-                  answerInput={securityAnswerInput}
-                  setAnswerInput={setSecurityAnswerInput}
-                  onVerify={handleVerifySecurityAnswer}
-                  onCancel={() => setShowForgotPin(false)}
-                />
-              )}
-            </div>
-          ) : (
+         ) : !vaultUnlocked ? (
+  // LOCKED - SHOW PIN ENTRY
+  <div className="vault-locked">
+    {!showForgotPin ? (
+      <>
+        <p className="vault-lock-message">
+          <i className="fa-solid fa-shield-halved" aria-hidden="true"></i> This section is locked. Enter your PIN to view prescriptions.
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCheckPin();
+          }}
+          noValidate
+        >
+          <label htmlFor="vault-unlock-pin" className="sr-only">
+            Enter 4-digit PIN
+          </label>
+          <input
+            id="vault-unlock-pin"
+            name="unlock-pin"
+            type="password"
+            maxLength="4"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="Enter 4-digit PIN"
+            value={pinInput}
+            onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+            className="vault-pin-input"
+          />
+          <button type="submit" className="add-med-btn">
+            Unlock Vault
+          </button>
+        </form>
+        <button
+          type="button"
+          className="vault-forgot-link"
+          onClick={() => setShowForgotPin(true)}
+        >
+          Forgot PIN?
+        </button>
+      </>
+    ) : (
+      <ForgotPinFlow
+        question={vaultSecurityQuestion}
+        answerInput={securityAnswerInput}
+        setAnswerInput={setSecurityAnswerInput}
+        onVerify={handleVerifySecurityAnswer}
+        onCancel={() => setShowForgotPin(false)}
+      />
+    )}
+  </div>
+) : (
             // UNLOCKED - SHOW VAULT CONTENTS
             <div className="vault-unlocked">
               <div className="vault-upload-row">
@@ -1584,11 +1606,11 @@ const editingMedication =
 }
 
    
-
 function ForgotPinFlow({ question, answerInput, setAnswerInput, onVerify, onCancel }) {
   const [newPin, setNewPin] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (newPin.length !== 4) {
       alert("New PIN must be exactly 4 digits.");
       return;
@@ -1599,33 +1621,43 @@ function ForgotPinFlow({ question, answerInput, setAnswerInput, onVerify, onCanc
   return (
     <div className="vault-forgot-flow">
       <p className="vault-lock-message">
-        <i className="fa-solid fa-circle-question"></i> {question}
+        <i className="fa-solid fa-circle-question" aria-hidden="true"></i> {question}
       </p>
-      <div className="form-group">
-        <label>Your Answer</label>
-        <input 
-          type="text" 
-          placeholder="Enter your answer"
-          value={answerInput}
-          onChange={(e) => setAnswerInput(e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>New 4-digit PIN</label>
-        <input 
-          type="password" 
-          maxLength="4"
-          inputMode="numeric"
-          placeholder="Choose a new PIN"
-          value={newPin}
-          onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
-
-        />
-      </div>
-      <button className="add-med-btn" onClick={handleSubmit}>Reset PIN & Unlock</button>
-      <p className="vault-forgot-link" onClick={onCancel}>Cancel</p>
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="form-group">
+          <label htmlFor="forgot-pin-answer">Your Answer</label>
+          <input
+            id="forgot-pin-answer"
+            name="security-answer"
+            type="text"
+            autoComplete="off"
+            placeholder="Enter your answer"
+            value={answerInput}
+            onChange={(e) => setAnswerInput(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="forgot-pin-new-pin">New 4-digit PIN</label>
+          <input
+            id="forgot-pin-new-pin"
+            name="new-pin"
+            type="password"
+            maxLength="4"
+            inputMode="numeric"
+            autoComplete="new-password"
+            placeholder="Choose a new PIN"
+            value={newPin}
+            onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+          />
+        </div>
+        <button type="submit" className="add-med-btn">
+          Reset PIN & Unlock
+        </button>
+      </form>
+      <button type="button" className="vault-forgot-link" onClick={onCancel}>
+        Cancel
+      </button>
     </div>
   );
 }
-
 export default App;
