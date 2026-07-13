@@ -1,10 +1,9 @@
 import { LocalNotifications } from '@capacitor/local-notifications';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import useLocalStorage from "./hooks/useLocalStorage";
 import useClock from "./hooks/useClock";
 import useVoiceRecognition from "./hooks/useVoiceRecognition";
-import MedicationCard from "./components/MedicationCard";
 import MedicationGroup from "./components/MedicationGroup";
 import AppointmentCard from "./components/AppointmentCard";
 import BannerStrip from "./components/BannerStrip";
@@ -14,9 +13,6 @@ import EditMedicationForm from "./components/EditMedicationForm";
 import NotificationService from "./services/notificationService";
 
 import {
-  hasInventory,
-  isLowStock,
-  isOutOfStock,
   getDaysUntil,
   formatAppointmentDate,
 } from "./utils/medicationUtils";
@@ -88,10 +84,10 @@ const [reminderTimes, setReminderTimes] = useState([]);
   
 
 // Streak & History states
-  const [history, setHistory] = useState(() => {
-    const savedHistory = localStorage.getItem('MyMedMinder_history');
-    return savedHistory ? JSON.parse(savedHistory) : [];
-  });
+  const [history, setHistory] = useLocalStorage(
+    "MyMedMinder_history",
+    []
+  );
   const [missedHistory, setMissedHistory] = useLocalStorage(
   "MyMedMinder_missed",
   []
@@ -278,7 +274,7 @@ const [medSortBy, setMedSortBy] = useState('time'); // time | name
   }, [medications, lastRecordedDate]);
 
  // Handle checking/unchecking meds & updating inventory balance
-const handleUpdateStock = (id) => {
+const handleUpdateStock = useCallback((id) => {
   const newValue =
     editStockValue === ""
       ? null
@@ -297,9 +293,9 @@ const handleUpdateStock = (id) => {
 
   setEditingStockId(null);
   setEditStockValue("");
-};
+}, [editStockValue, setMedications]);
 
-const toggleTaken = (id) => {
+const toggleTaken = useCallback((id) => {
   // Remove from missed meds if user marks it as taken
   setMissedMedsList((prev) =>
     prev.filter((med) => med.id !== id)
@@ -331,7 +327,7 @@ const toggleTaken = (id) => {
       };
     })
   );
-};
+}, [setMedications]);
   // Add medication
 const handleAddMedication = async (e) => {
   e.preventDefault();
@@ -397,9 +393,9 @@ setMedications((prev) => [...prev, newMed]);
 };
 
   // Open the edit form for a given medication
-  const handleStartEditMedication = (med) => {
+  const handleStartEditMedication = useCallback((med) => {
     setEditingMedicationId(med.id);
-  };
+  }, []);
 
   // Close the edit form without saving
   const handleCancelEditMedication = () => {
@@ -481,7 +477,7 @@ setMedications((prev) => [...prev, newMed]);
 
 
   // Delete medication
-  const deleteMedication = async (id) => {
+  const deleteMedication = useCallback(async (id) => {
   if (
     window.confirm(
       "Are you sure you want to remove this medication from your schedule?"
@@ -512,7 +508,7 @@ setMedications((prev) => [...prev, newMed]);
 
     setMedications((prev) => prev.filter((med) => med.id !== id));
   }
-};
+}, [medications, setMedications]);
 
   // Reset checklist & log compliance score for history
   const handleResetForTomorrow = () => {
@@ -708,13 +704,13 @@ setMedications((prev) =>
  };
   // Check if missed
   
-const checkIfMissed = (med) => {
+const checkIfMissed = useCallback((med) => {
     if (med.taken) return false;
     if (med.period === 'Morning' && currentHour >= 12) return true;
     if (med.period === 'Afternoon' && currentHour >= 17) return true;
     return false;
-  };
-const getPeriodIcon = (period) => {
+  }, [currentHour]);
+const getPeriodIcon = useCallback((period) => {
   if (period === "Morning") {
     return <i className="fa-solid fa-cloud-sun icon-morning"></i>;
   }
@@ -724,7 +720,7 @@ const getPeriodIcon = (period) => {
   }
 
   return <i className="fa-solid fa-moon icon-evening"></i>;
-};
+}, []);
  
   // Search + status filter applied across all periods (RC5)
   const visibleMedications = React.useMemo(() => {
@@ -828,11 +824,23 @@ const getPeriodIcon = (period) => {
     return `${days} days ago`;
   };
 
+  // Grouped + sorted meds per period, memoized so the array reference stays
+  // stable across unrelated re-renders (e.g. typing in the Add form) —
+  // this is what lets React.memo on MedicationGroup/MedicationCard actually skip work.
+  const groupedMedications = React.useMemo(() => {
+    const periods = ['Morning', 'Afternoon', 'Evening'];
+    const groups = {};
+    periods.forEach((p) => {
+      groups[p] = sortMedications(
+        visibleMedications.filter((med) => med.period === p)
+      );
+    });
+    return groups;
+  }, [visibleMedications, medSortBy]);
+
   // Reusable function to print out cards for a specific time period
  const renderMedGroup = (timePeriod, sectionTitle) => {
-  const filteredMeds = sortMedications(
-    visibleMedications.filter((med) => med.period === timePeriod)
-  );
+  const filteredMeds = groupedMedications[timePeriod];
 
   return (
     <MedicationGroup

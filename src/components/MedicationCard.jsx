@@ -149,4 +149,4 @@ function MedicationCard({
   );
 }
 
-export default MedicationCard;
+export default React.memo(MedicationCard);

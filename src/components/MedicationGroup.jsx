@@ -68,4 +68,4 @@ onEdit,
   );
 }
 
-export default MedicationGroup;
+export default React.memo(MedicationGroup);
