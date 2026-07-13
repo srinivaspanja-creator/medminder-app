@@ -23,7 +23,7 @@ function MedicationCard({
       <div className="med-info">
         {isMissed && (
           <span className="missed-badge">
-            <i className="fa-solid fa-triangle-exclamation"></i> Overdue /
+            <i className="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Overdue /
             Missed Dose
           </span>
         )}
@@ -48,6 +48,7 @@ function MedicationCard({
           ? "fa-circle-check"
           : "fa-clock"
       }`}
+      aria-hidden="true"
     ></i>
 
     {isMissed
@@ -59,12 +60,12 @@ function MedicationCard({
 </div>
 
         <p className="med-dosage">
-          <i className="fa-solid fa-prescription-bottle-medical icon-inline"></i>
+          <i className="fa-solid fa-prescription-bottle-medical icon-inline" aria-hidden="true"></i>
           <strong>Dosage:</strong> {med.dosage}
         </p>
 
 <p className="med-instructions">
-  <i className="fa-solid fa-file-medical icon-inline"></i>
+  <i className="fa-solid fa-file-medical icon-inline" aria-hidden="true"></i>
   {med.instructions}
 </p>
 
@@ -97,6 +98,7 @@ function MedicationCard({
 
       <div className="card-actions">
         <button
+          type="button"
           className={`action-btn ${
             med.taken ? "btn-undo" : "btn-complete"
           } ${isMissed ? "btn-missed-alert" : ""}`}
@@ -105,7 +107,7 @@ function MedicationCard({
           {med.taken ? (
           <>
   <span className="taken-label">
-    <i className="fa-solid fa-circle-check"></i>
+    <i className="fa-solid fa-circle-check" aria-hidden="true"></i>
     Taken
   </span>
 
@@ -125,19 +127,22 @@ function MedicationCard({
         </button>
 
         <button
+          type="button"
           className="edit-btn"
           onClick={() => onEdit?.(med)}
           title="Edit Medication"
         >
-          <i className="fa-solid fa-pen"></i> Edit
+          <i className="fa-solid fa-pen" aria-hidden="true"></i> Edit
         </button>
 
         <button
+          type="button"
           className="delete-btn"
           onClick={() => deleteMedication(med.id)}
           title="Delete Entry"
+          aria-label={`Delete ${med.name}`}
         >
-          <i className="fa-solid fa-trash-can"></i>
+          <i className="fa-solid fa-trash-can" aria-hidden="true"></i>
         </button>
       </div>
     </div>
